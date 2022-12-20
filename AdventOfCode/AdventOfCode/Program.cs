@@ -7,7 +7,8 @@
             Console.WriteLine("yolo");
             //firstDay();
             //secondDay();
-            dayThree();
+            //dayThree();
+            dayFour();
         }
 
         static void firstDay()
@@ -224,6 +225,102 @@
 
             Console.WriteLine($"total priority {totalPriority}");
 
+        }
+
+        static void dayFour()
+        {
+            var currDir = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
+            var pathToDay2Data = Path.Combine(currDir, "InputData", "DayFourData.txt");
+
+            var rawData = File.ReadAllLines(pathToDay2Data);
+
+            List<Tuple<string, string>> overLaps = new List<Tuple<string, string>>();
+
+            foreach (var pair in rawData)
+            {
+                var splitPairs = pair.Split(",");
+                var f = splitPairs[0];
+                var s = splitPairs[1];
+                if (checkOverlapTwo(f, s))
+                {
+
+                    Console.WriteLine($"overlap found {new string(f)} - {new string(s)}");
+                    overLaps.Add(new Tuple<string, string>(f.ToString(), s.ToString()));
+                }
+            }
+
+            Console.WriteLine($"TOtal overlaps found {overLaps.Count}");
+        }
+
+        static bool checkOverlapOne(string f, string s)
+        {
+            bool passes = false;
+
+            var firstFirstNumber = Convert.ToInt32(f.Split("-")[0]);
+            var firstSecondNumber = Convert.ToInt32(f.Split("-")[1]);
+            var secondFirstNumber = Convert.ToInt32(s.Split("-")[0]);
+            var secondSecondNumber = Convert.ToInt32(s.Split("-")[1]);
+            
+            if (firstFirstNumber >= secondFirstNumber && firstSecondNumber <= secondSecondNumber)
+            {
+                return true;
+            }
+
+            if (secondFirstNumber >= firstFirstNumber && secondSecondNumber <= firstSecondNumber)
+            {
+                return true;
+            }
+
+            if (firstFirstNumber == firstSecondNumber)
+            {
+                if (firstFirstNumber >= secondFirstNumber && firstFirstNumber <= secondSecondNumber)
+                {
+                    return true;
+                }
+            }
+
+            if (secondFirstNumber == secondSecondNumber)
+            {
+                if (secondFirstNumber >= firstFirstNumber && secondFirstNumber <= firstSecondNumber)
+                {
+                    return true;
+                }
+            }
+            
+            return passes;
+        }
+
+
+        static bool checkOverlapTwo(string f, string s)
+        {
+            bool passes = false;
+
+            var firstFirstNumber = Convert.ToInt32(f.Split("-")[0]);
+            var firstSecondNumber = Convert.ToInt32(f.Split("-")[1]);
+            var secondFirstNumber = Convert.ToInt32(s.Split("-")[0]);
+            var secondSecondNumber = Convert.ToInt32(s.Split("-")[1]);
+
+            if (firstFirstNumber >= secondFirstNumber && firstFirstNumber <= secondSecondNumber)
+            {
+                return true;
+            }
+
+            if (firstSecondNumber >= secondFirstNumber && firstSecondNumber <= secondSecondNumber)
+            {
+                return true;
+            }
+
+            if (secondFirstNumber >= firstFirstNumber && secondFirstNumber <= firstSecondNumber)
+            {
+                return true;
+            }
+
+            if (secondSecondNumber >= firstFirstNumber && secondSecondNumber <= firstSecondNumber)
+            {
+                return true;
+            }
+
+            return passes;
         }
 
         // W, L, D
