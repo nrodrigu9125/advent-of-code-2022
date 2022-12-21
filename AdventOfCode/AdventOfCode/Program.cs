@@ -11,7 +11,8 @@ namespace AdventOfCode
             //secondDay();
             //dayThree();
             //dayFour();
-            dayFive();
+            //dayFive();
+            daySix();
         }
 
         static void firstDay()
@@ -360,7 +361,7 @@ namespace AdventOfCode
             }
 
             List<string> output1 = new List<string>();
-            
+
 
             foreach (var crateStack in crateStackDictionary)
             {
@@ -368,7 +369,59 @@ namespace AdventOfCode
             }
 
 
-            Console.WriteLine($"output 1 {string.Join("", output1).Replace("[","").Replace("]", "")}");
+            Console.WriteLine($"output 1 {string.Join("", output1).Replace("[", "").Replace("]", "")}");
+        }
+
+        static void daySix()
+        {
+            var currDir = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
+            var pathToDay2Data = Path.Combine(currDir, "InputData", "DaySixData.txt");
+
+            var rawData = File.ReadAllText(pathToDay2Data);
+
+            List<string> fourMostRecent = new List<string>();
+            Queue<char> recentQueue = new Queue<char>();
+
+            for (int i = 0; i < rawData.Length; i++)
+            {
+                // part 1
+                //if (recentQueue.Count >= 4)
+                //part 2
+                if (recentQueue.Count >= 14)
+                {
+
+                    //compare
+                    // distinct
+                    Console.WriteLine($"LP: {i + 1} / BEFORE queue {new string(recentQueue.ToArray())}");
+
+                    var test = recentQueue.Distinct().Count();
+                    if (test == recentQueue.Count)
+                    {
+                        // done 
+                        Console.WriteLine($"it took {i} letters to process");
+                        return;
+                    }
+                    //en
+                    recentQueue.Enqueue(rawData[i]);
+                    Console.WriteLine($"Enqueue {rawData[i]}");
+
+                    //deq
+                    var d = recentQueue.Dequeue();
+                    Console.WriteLine($"Dequeue {d}");
+
+
+                    Console.WriteLine($"LP: {i + 1} / AFTER queue {new string(recentQueue.ToArray())}");
+
+                    Console.WriteLine();
+                }
+                else
+                {
+                    recentQueue.Enqueue(rawData[i]);
+
+                }
+            }
+
+
         }
 
         static bool checkOverlapOne(string f, string s)
