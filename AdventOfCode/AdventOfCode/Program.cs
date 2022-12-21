@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode
+﻿using System.Linq;
+
+namespace AdventOfCode
 {
     public class Program
     {
@@ -8,7 +10,8 @@
             //firstDay();
             //secondDay();
             //dayThree();
-            dayFour();
+            //dayFour();
+            dayFive();
         }
 
         static void firstDay()
@@ -105,7 +108,7 @@
                     totalScore += roundScore;
 
                     Console.WriteLine($"{didIWLorD(oppThrow, myThrow)} - round score : {roundScore} - running total score is {totalScore}");
-                    
+
                 }
                 else
                 {
@@ -192,6 +195,7 @@
 
             var totalPriority = 0;
 
+            // part 1
             //foreach (var item in rawData)
             //{
             //    var length = item.Length;
@@ -207,10 +211,12 @@
             //}
 
             //Console.WriteLine($"total priority {totalPriority}");
+
+            // part 2
             var startTake = 0;
             var endTake = 0;
             string firstRuck, secondRuck, thirdRuck = "";
-            for (int i = 0; i < rawData.Length; i+=3)
+            for (int i = 0; i < rawData.Length; i += 3)
             {
                 char inter = '0';
 
@@ -252,6 +258,119 @@
             Console.WriteLine($"TOtal overlaps found {overLaps.Count}");
         }
 
+        static void dayFive()
+        {
+            var currDir = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
+            var pathToDay2Data = Path.Combine(currDir, "InputData", "DayFiveData.txt");
+
+            var rawData = File.ReadAllLines(pathToDay2Data);
+
+            var moveIns = rawData.Where(x => x.StartsWith("move"));
+
+            var dataOnly = rawData.Where(x => x.StartsWith("move") == false && string.IsNullOrEmpty(x) == false).ToList();
+            dataOnly.Reverse();
+
+            //for (int i = 0; i < dataOnly.Count(); i++)
+            //{
+            //    Console.WriteLine(dataOnly[i]);
+            //}
+
+            Dictionary<int, List<string>> crateStackDictionary = new Dictionary<int, List<string>>();
+
+            var numberOfCrateStacks = dataOnly.First().Split(" ").Count(x => string.IsNullOrEmpty(x) == false);
+
+            for (int i = 1; i < numberOfCrateStacks + 1; i++)
+            {
+                crateStackDictionary.Add(i, new List<string>());
+            }
+
+            for (var index = 0; index < dataOnly.Count; index++)
+            {
+                if (index == 0)
+                {
+                    continue;
+                }
+
+                var line = dataOnly[index];
+                var dicCounter = 1;
+                for (int lineIndex = 0; lineIndex < line.Length; lineIndex += 3)
+                {
+                    var firstSet = line[lineIndex];
+                    var secondSet = line[lineIndex + 1];
+                    var thirdSet = line[lineIndex + 2];
+
+                    if (firstSet != ' ' && secondSet != ' ' && thirdSet != ' ')
+                    {
+                        crateStackDictionary[dicCounter].Insert(0, new string(new char[] { firstSet, secondSet, thirdSet }));
+                    }
+
+                    dicCounter++;
+                    lineIndex++;
+                }
+
+            }
+
+            foreach (var crateStack in crateStackDictionary)
+            {
+                Console.WriteLine($"Crate {crateStack.Key} has items {string.Join(",", crateStack.Value)}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("insert crane noises here");
+            Console.WriteLine();
+
+            foreach (var moveInstruction in moveIns)
+            {
+                var test = moveInstruction.Split(" ").Where(x => int.TryParse(x, out int res) == true);
+
+                var nums = test.Select(x => int.TryParse(x, out int res) ? res : 0).ToList();
+
+                var numberOfCratesToMove = nums[0];
+                var sourceCrate = nums[1];
+                var destinationCrate = nums[2];
+
+                var theCratesToMove = crateStackDictionary[sourceCrate].Take(numberOfCratesToMove).ToList();
+
+                // part 1
+                //foreach (var crate in theCratesToMove)
+                //{
+                //    crateStackDictionary[destinationCrate].Insert(0, crate);
+                //}
+
+                // part 2
+                crateStackDictionary[destinationCrate].InsertRange(0, theCratesToMove);
+
+                crateStackDictionary[sourceCrate].RemoveRange(0, theCratesToMove.Count);
+
+
+                Console.WriteLine($"---- After Move");
+
+                foreach (var crateStack in crateStackDictionary)
+                {
+                    Console.WriteLine($"Crate {crateStack.Key} has items {string.Join(",", crateStack.Value)}");
+                }
+            }
+
+            Console.WriteLine($"---- DONE ----");
+
+
+            foreach (var crateStack in crateStackDictionary)
+            {
+                Console.WriteLine($"Crate {crateStack.Key} has items {string.Join(",", crateStack.Value)}");
+            }
+
+            List<string> output1 = new List<string>();
+            
+
+            foreach (var crateStack in crateStackDictionary)
+            {
+                output1.Add(crateStack.Value.First());
+            }
+
+
+            Console.WriteLine($"output 1 {string.Join("", output1).Replace("[","").Replace("]", "")}");
+        }
+
         static bool checkOverlapOne(string f, string s)
         {
             bool passes = false;
@@ -260,7 +379,7 @@
             var firstSecondNumber = Convert.ToInt32(f.Split("-")[1]);
             var secondFirstNumber = Convert.ToInt32(s.Split("-")[0]);
             var secondSecondNumber = Convert.ToInt32(s.Split("-")[1]);
-            
+
             if (firstFirstNumber >= secondFirstNumber && firstSecondNumber <= secondSecondNumber)
             {
                 return true;
@@ -286,7 +405,7 @@
                     return true;
                 }
             }
-            
+
             return passes;
         }
 
